@@ -1,0 +1,101 @@
+[versions]
+# Core Android & Compose
+coreKtx = "1.13.1"
+lifecycleRuntimeKtx = "2.8.0"
+activityCompose = "1.9.0"
+composeBom = "2024.06.00" # Keep this up-to-date with latest stable
+composeCompiler = "1.5.1" # Must match your AGP's Kotlin compiler extension version
+
+# Kotlin Coroutines
+kotlinCoroutines = "1.8.0"
+
+# Networking
+retrofit = "2.9.0"
+okhttp = "4.12.0"
+gsonConverter = "2.9.0"
+loggingInterceptor = "4.12.0"
+
+# Image Loading
+glide = "4.16.0"
+
+# Room
+room = "2.6.1"
+
+# Paging 3
+paging = "3.2.1"
+
+# Jetpack Navigation
+navigationCompose = "2.8.0-beta02"
+
+# Hilt (Dependency Injection)
+hilt = "2.51.1"
+hiltCompiler = "1.2.0" # For Hilt with Jetpack components
+
+# Testing
+junit = "4.13.2"
+androidxJunit = "1.1.5"
+espressoCore = "3.5.1"
+
+# KSP version - MUST BE COMPATIBLE WITH YOUR KOTLIN VERSION (1.9.0 in your case)
+# For Kotlin 1.9.0, KSP version 1.9.0-1.0.13 is a common stable one.
+# Always check the KSP releases page: https://github.com/google/ksp/releases
+ksp = "1.9.0-1.0.13" # ADDED THIS LINE
+
+[libraries]
+# Core Android & Compose
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" } # No version.ref, as it's part of composeBom
+androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" } # No version.ref
+androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" } # No version.ref
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" } # No version.ref
+androidx-lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycleRuntimeKtx" }
+
+# Kotlin Coroutines
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinCoroutines" }
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinCoroutines" }
+
+# Networking
+retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+retrofit-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "gsonConverter" }
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "loggingInterceptor" }
+
+# Image Loading
+glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
+glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
+
+# Room
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+
+# Paging 3
+androidx-paging-runtime-ktx = { group = "androidx.paging", name = "paging-runtime-ktx", version.ref = "paging" }
+androidx-paging-compose = { group = "androidx.paging", name = "paging-compose", version.ref = "paging" }
+
+# Jetpack Navigation
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+
+# Hilt
+dagger-hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
+androidx-hilt-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "hiltCompiler" }
+androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltCompiler" } # Note: Refers to hiltCompiler for its version
+
+# Testing
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxJunit" }
+androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" } # No version.ref
+androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" } # No version.ref
+androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" } # No version.ref
+
+[plugins]
+android-application = { id = "com.android.application", version = "8.4.1" } # Your AGP version
+kotlin-android = { id = "org.jetbrains.kotlin.android", version = "1.9.0" } # Your Kotlin plugin version
+# REMOVE THIS LINE: kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version = "1.9.0" }
+hilt-android = { id = "com.google.dagger.hilt.android", version = "2.51.1" } # Hilt plugin version
+kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" } # ADDED THIS LINE

@@ -2,7 +2,7 @@ Movie Browser App 🍿🎬
 <p align="center">
 <img src="https://img.shields.io/badge/Kotlin-0095D5?style=for-the-badge&logo=kotlin&logoColor=white" alt="Kotlin Badge">
 <img src="https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Android Badge">
-<img src="https://img.shields.io/badge/Jetpack Compose-4285F4?style=for-the-badge&logo=jetpackcompose&logoColor=white" alt="Jetpack Compose Badge">
+<img src="https://img.shields.io/badge/Jetpack%20Compose-4285F4?style=for-the-badge&logo=jetpackcompose&logoColor=white" alt="Jetpack Compose Badge">
 <img src="https://img.shields.io/badge/Hilt-000000?style=for-the-badge&logo=dagger&logoColor=white" alt="Hilt Badge">
 <img src="https://img.shields.io/badge/Retrofit-E44C30?style=for-the-badge&logo=retrofit&logoColor=white" alt="Retrofit Badge">
 <img src="https://img.shields.io/badge/Room-4CAF50?style=for-the-badge&logo=androidx&logoColor=white" alt="Room Badge">
@@ -12,6 +12,12 @@ Movie Browser App 🍿🎬
 Welcome to the Movie Browser App! This project is a modern Android application built entirely with Jetpack Compose that allows users to explore a vast collection of movies and TV shows. Powered by The Movie Database (TMDb) API, it showcases best practices in Android development, including dependency injection with Hilt, reactive programming with Kotlin Coroutines, efficient data loading with Paging 3, and local data persistence with Room.
 
 Dive in to discover trending titles, search for your favorites, and get detailed information all within a beautiful and responsive user interface!
+
+<p align="center">
+<img src="assets/app_demo.gif" alt="Movie Browser App Demo">
+<br>
+<i>A quick demo of the Movie Browser App in action!</i>
+</p>
 
 🚀 Features
 Browse Trending/Popular Movies & TV Shows: Discover what's hot and new.
@@ -92,13 +98,6 @@ Open the project in Android Studio.
 Sync Gradle files (File > Sync Project with Gradle Files).
 
 Run the app on an emulator or a physical device.
-
-🖼️ Screenshots / GIF
-<p align="center">
-<img src="assets/app_demo.gif" alt="Movie Browser App Demo">
-<br>
-<i>A quick demo of the Movie Browser App in action!</i>
-</p>
 
 🔮 Future Enhancements
 Implement movie/TV show favoriting and watchlist features.

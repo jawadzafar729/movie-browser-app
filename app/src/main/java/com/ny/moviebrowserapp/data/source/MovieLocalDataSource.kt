@@ -22,9 +22,14 @@ class MovieLocalDataSource(private val movieDao: MovieDao) {
         return movieDao.getMoviesByType(type)
     }
 
-    suspend fun getMovieById(movieId: Int): MovieEntity? {
+    fun getMovieById(movieId: Int): Flow<MovieEntity?> {
         return movieDao.getMovieById(movieId)
     }
+
+    suspend fun getMovieByIdOnce(movieId: Int): MovieEntity? {
+        return movieDao.getMovieByIdOnce(movieId)
+    }
+
 
     fun getFavoriteMovies(): Flow<List<MovieEntity>> {
         return movieDao.getFavoriteMovies()

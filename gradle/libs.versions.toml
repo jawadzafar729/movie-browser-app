@@ -6,6 +6,7 @@ activityCompose = "1.9.0"
 composeBom = "2024.06.00" # Keep this up-to-date with latest stable
 composeCompiler = "1.5.1" # Must match your AGP's Kotlin compiler extension version
 
+
 # Kotlin Coroutines
 kotlinCoroutines = "1.8.0"
 
@@ -17,6 +18,7 @@ loggingInterceptor = "4.12.0"
 
 # Image Loading
 glide = "4.16.0"
+glideCompose = "1.0.0-beta01"
 
 # Room
 room = "2.6.1"
@@ -66,6 +68,7 @@ okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-i
 # Image Loading
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
 glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
+glide-compose = { group = "com.github.bumptech.glide", name = "compose", version.ref = "glideCompose" } # Add this line
 
 # Room
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }

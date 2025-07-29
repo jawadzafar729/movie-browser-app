@@ -77,6 +77,7 @@ dependencies {
     // Glide (for image loading)
     implementation(libs.glide)
     ksp(libs.glide.compiler)
+    implementation(libs.glide.compose)
 
     // Room (for local database persistence)
     implementation(libs.androidx.room.runtime)

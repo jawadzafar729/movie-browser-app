@@ -14,6 +14,6 @@ data class MovieDetails(
     val genres: List<Genre>?,
     val runtime: Int?,
     val tagline: String?,
-    val status: String?
-    // Add more fields as needed from the API response
+    val status: String?,
+    val isFavorite: Boolean = false
 )

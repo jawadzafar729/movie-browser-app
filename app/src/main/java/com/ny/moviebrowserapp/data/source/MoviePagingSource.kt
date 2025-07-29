@@ -3,6 +3,7 @@ package com.ny.moviebrowserapp.data.source
 import android.net.http.HttpException
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.ny.moviebrowserapp.data.local.MovieDao
 import com.ny.moviebrowserapp.data.mapper.toDomain
 import com.ny.moviebrowserapp.data.mapper.toEntity
 import com.ny.moviebrowserapp.data.remote.model.MovieDto
@@ -29,7 +30,17 @@ class MoviePagingSource(
             }
 
             // Cache the fetched movies locally
-            val movieEntities = response.map { it.toDomain().toEntity(contentType) }
+            val movieEntities = response.map { movieDto ->
+                val existingMovieEntity = localDataSource.getMovieByIdOnce(movieDto.id) // <--- Get existing DB entity
+                // If it exists, use its favorite status; otherwise, it's not a favorite from remote
+                val isFavorite = existingMovieEntity?.isFavorite ?: false
+
+                // Convert DTO to Entity, applying the correct favorite status
+                movieDto.toDomain().toEntity(
+                    type = contentType,
+                ).copy(isFavorite = isFavorite) // <--- Crucial: Override isFavorite with the preserved value
+            }
+
             localDataSource.saveMovies(movieEntities)
 
             LoadResult.Page(

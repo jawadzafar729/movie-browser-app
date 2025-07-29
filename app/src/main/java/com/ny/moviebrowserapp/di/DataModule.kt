@@ -33,8 +33,7 @@ object DataModule {
     fun provideMovieRepository(
         remoteDataSource: MovieRemoteDataSource,
         localDataSource: MovieLocalDataSource,
-        movieDao: MovieDao // Pass DAO directly if needed in repo impl
     ): MovieRepository {
-        return MovieRepositoryImpl(remoteDataSource, localDataSource, movieDao)
+        return MovieRepositoryImpl(remoteDataSource, localDataSource)
     }
 }

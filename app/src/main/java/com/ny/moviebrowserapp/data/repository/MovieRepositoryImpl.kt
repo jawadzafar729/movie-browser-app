@@ -5,6 +5,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
 import com.ny.moviebrowserapp.data.local.MovieDao
+import com.ny.moviebrowserapp.data.local.MovieEntity
 import com.ny.moviebrowserapp.data.mapper.toDomain
 import com.ny.moviebrowserapp.data.mapper.toEntity
 import com.ny.moviebrowserapp.data.source.MovieLocalDataSource
@@ -13,7 +14,12 @@ import com.ny.moviebrowserapp.data.source.MovieRemoteDataSource
 import com.ny.moviebrowserapp.domain.model.Movie
 import com.ny.moviebrowserapp.domain.model.MovieDetails
 import com.ny.moviebrowserapp.domain.repository.MovieRepository
+import com.ny.moviebrowserapp.presentation.Screen
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -22,7 +28,7 @@ import javax.inject.Singleton
 class MovieRepositoryImpl @Inject constructor(
     private val remoteDataSource: MovieRemoteDataSource,
     private val localDataSource: MovieLocalDataSource,
-    private val movieDao: MovieDao // Direct access to DAO for some operations, or abstract into localDataSource more
+
 ) : MovieRepository {
 
     override fun getPopularMovies(): Flow<PagingData<Movie>> {
@@ -52,12 +58,32 @@ class MovieRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getMovieDetails(movieId: Int): MovieDetails {
+    override fun getMovieDetails(movieId: Int): Flow<MovieDetails?> {
+        // 1. Create a flow for the remote details (one-time fetch)
+        val remoteDetailsFlow = flow {
+            try {
+                val details = remoteDataSource.getMovieDetails(movieId).toDomain()
+                emit(details)
+            } catch (e: Exception) {
+                // Log the error for debugging
+                // Log.e("MovieRepositoryImpl", "Error fetching remote details for movie $movieId: ${e.message}", e)
+                emit(null) // Emit null or an error wrapper if remote fetch fails
+            }
+        }
 
-        val remoteDetailsDto = remoteDataSource.getMovieDetails(movieId)
-        val remoteMovie = remoteDetailsDto.toDomain() // You'll need a MovieDetailsDto to Movie mapper
-        // Optionally, save specific details to local cache here if desired
-        return remoteMovie
+        // 2. Get a flow that observes the favorite status from the local database
+        val localMovieEntityFlow: Flow<MovieEntity?> = localDataSource.getMovieById(movieId) // Directly use the Flow from DAO
+
+        // 3. Combine both flows: remote details (one-time) and local favorite status (reactive)
+        return combine(remoteDetailsFlow, localMovieEntityFlow) { remoteDetails, localMovieEntity ->
+            if (remoteDetails == null) {
+                null // If remote fetch failed, no details to show
+            } else {
+                // Augment the remote details with the local favorite status
+                val isFavorite = localMovieEntity?.isFavorite ?: false
+                remoteDetails.copy(isFavorite = isFavorite)
+            }
+        }.distinctUntilChanged()
     }
 
     override fun getFavoriteMovies(): Flow<List<Movie>> {
@@ -68,13 +94,10 @@ class MovieRepositoryImpl @Inject constructor(
 
 
     override suspend fun toggleFavoriteMovie(movie: Movie, isFavorite: Boolean) {
-        val existingMovie = localDataSource.getMovieById(movie.id)
+        val existingMovie = localDataSource.getMovieByIdOnce(movie.id)
         if (existingMovie != null) {
             localDataSource.updateMovie(existingMovie.copy(isFavorite = isFavorite))
         } else {
-            // If it's a favorite and not in cache, save it.
-            // You might want to distinguish cached "popular" movies from explicit "favorites"
-            // For simplicity now, we'll just save it as a favorite type
             localDataSource.saveMovie(movie.toEntity(type = "favorite").copy(isFavorite = isFavorite))
         }
     }

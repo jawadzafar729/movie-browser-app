@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -52,16 +53,14 @@ import com.ny.moviebrowserapp.domain.model.Movie
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MovieListScreen(
-    onMovieClick: (Int) -> Unit, // Callback for navigating to details
-    viewModel: MovieListViewModel = hiltViewModel() // Injects ViewModel
+    onMovieClick: (Int) -> Unit,
+    viewModel: MovieListViewModel = hiltViewModel()
 ) {
-    // Collect the flows from ViewModel as LazyPagingItems
     val popularMovies = viewModel.popularMovies.collectAsLazyPagingItems()
     val topRatedMovies = viewModel.topRatedMovies.collectAsLazyPagingItems()
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     val searchResults = viewModel.searchResults.collectAsLazyPagingItems()
 
-    // State for selected tab (Popular, Top Rated, Search)
     var selectedTab by remember { mutableStateOf(0) }
     val tabs = listOf("Popular", "Top Rated")
 
@@ -81,7 +80,6 @@ fun MovieListScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // Search Bar
             TextField(
                 value = searchQuery,
                 onValueChange = { viewModel.onSearchQueryChanged(it) },
@@ -93,8 +91,7 @@ fun MovieListScreen(
                     .padding(8.dp)
             )
 
-            // Tabs for Popular/Top Rated
-            if (searchQuery.isBlank()) { // Only show tabs if not searching
+            if (searchQuery.isBlank()) {
                 TabRow(selectedTabIndex = selectedTab) {
                     tabs.forEachIndexed { index, title ->
                         Tab(
@@ -106,22 +103,48 @@ fun MovieListScreen(
                 }
             }
 
-            // Display content based on selected tab or search results
             val moviesToDisplay = if (searchQuery.isBlank()) {
                 when (selectedTab) {
                     0 -> popularMovies
                     1 -> topRatedMovies
-                    else -> popularMovies // Fallback
+                    else -> popularMovies
                 }
             } else {
                 searchResults
             }
 
-            // Movie Grid Display
-            MovieGrid(movies = moviesToDisplay, onMovieClick = onMovieClick)
+            // --- START OF CHANGES IN MovieListScreen ---
+            // Use a Box to layer the MovieGrid and the full-screen loading/error/empty states
+            Box(modifier = Modifier.fillMaxSize()) {
+                MovieGrid(movies = moviesToDisplay, onMovieClick = onMovieClick)
+
+                when {
+                    // Full-screen loading when refreshing and no items are loaded yet
+                    moviesToDisplay.loadState.refresh is LoadState.Loading && moviesToDisplay.itemCount == 0 -> {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator(modifier = Modifier.size(50.dp))
+                        }
+                    }
+                    // Full-screen error when refreshing and no items are loaded yet
+                    moviesToDisplay.loadState.refresh is LoadState.Error && moviesToDisplay.itemCount == 0 -> {
+                        val e = moviesToDisplay.loadState.refresh as LoadState.Error
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            ErrorMessage(message = e.error.localizedMessage ?: "Failed to load movies.", modifier = Modifier.fillMaxSize())
+                        }
+                    }
+                    // Full-screen "No movies found" message
+                    moviesToDisplay.loadState.refresh is LoadState.NotLoading && moviesToDisplay.itemCount == 0 -> {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            NoResultsMessage("No movies found.", modifier = Modifier.fillMaxSize())
+                        }
+                    }
+                }
+            }
+            // --- END OF CHANGES IN MovieListScreen ---
         }
     }
 }
+
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -130,7 +153,7 @@ fun MovieGrid(
     onMovieClick: (Int) -> Unit
 ) {
     LazyVerticalGrid(
-        columns = GridCells.Fixed(2), // 2 columns for movie posters
+        columns = GridCells.Fixed(2),
         contentPadding = PaddingValues(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -143,25 +166,23 @@ fun MovieGrid(
             }
         }
 
-        // Handle loading states
+        // Handle only append loading states here
         movies.apply {
             when {
-                loadState.refresh is LoadState.Loading -> {
-                    item { LoadingIndicator(Modifier.fillMaxSize()) }
-                }
+
                 loadState.append is LoadState.Loading -> {
-                    item { LoadingIndicator(Modifier.fillMaxWidth()) }
-                }
-                loadState.refresh is LoadState.Error -> {
-                    val e = loadState.refresh as LoadState.Error
-                    item { ErrorMessage(message = e.error.localizedMessage ?: "Unknown error") }
+                    item(span = { GridItemSpan(maxLineSpan) }) { // Keep span for horizontal centering
+                        LoadingIndicator(Modifier.fillMaxWidth()) // Appears at the bottom
+                    }
                 }
                 loadState.append is LoadState.Error -> {
-                    val e = loadState.append as LoadState.Error
-                    item { ErrorMessage(message = e.error.localizedMessage ?: "Unknown error") }
-                }
-                loadState.refresh is LoadState.NotLoading && movies.itemCount == 0 -> {
-                    item { NoResultsMessage("No movies found.") }
+                    item(span = { GridItemSpan(maxLineSpan) }) { // Keep span for horizontal centering
+                        val e = loadState.append as LoadState.Error
+                        ErrorMessage(
+                            message = e.error.localizedMessage ?: "Unknown error",
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
                 }
             }
         }
@@ -222,6 +243,7 @@ fun MoviePosterCard(movie: Movie, onClick: (Int) -> Unit) {
 
 @Composable
 fun LoadingIndicator(modifier: Modifier = Modifier) {
+    // This component is fine as is; the centering problem was in how it was used.
     Box(
         modifier = modifier,
         contentAlignment = Alignment.Center

@@ -73,7 +73,7 @@ JDK 11 or higher.
 A TMDb API Key. You can get one by registering at The Movie Database API.
 
 Cloning the Repository
-git clone [https://github.com/jawadzafar729/MovieBrowserApp.git](https://github.com/jawadzafar729/movie-browser-app.git)
+git clone https://github.com/jawadzafar729/MovieBrowserApp.git
 cd MovieBrowserApp
 
 API Key Setup
@@ -94,7 +94,11 @@ Sync Gradle files (File > Sync Project with Gradle Files).
 Run the app on an emulator or a physical device.
 
 🖼️ Screenshots / GIF
-(Add screenshots or a GIF showcasing the app's features here)
+<p align="center">
+<img src="assets/app_demo.gif" alt="Movie Browser App Demo">
+<br>
+<i>A quick demo of the Movie Browser App in action!</i>
+</p>
 
 🔮 Future Enhancements
 Implement movie/TV show favoriting and watchlist features.
